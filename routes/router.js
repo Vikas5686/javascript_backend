@@ -9,7 +9,7 @@ router.post("/register", async (req, res) => {
     try {
         if (!name || !country || !email) {
             res.status(403).send("plz fill the form")
-        }else{
+        } else {
             const preuser = await users.findOne({ email: email })
             console.log(preuser)
             if (preuser) {
@@ -20,11 +20,11 @@ router.post("/register", async (req, res) => {
                     name, country, email, Score
                 })
                 await AddNewUser.save()
-                console.log(AddNewUser)
-                console.log(req.body);
-                res.send("hello")
+                console.log(AddNewUser._id)
+                
+                res.status(201).json(AddNewUser._id)
             }
-        }        
+        }
     } catch (error) {
         res.status(404).json(error)
     }
@@ -32,7 +32,7 @@ router.post("/register", async (req, res) => {
 
 router.get("/getrequist", async (req, res) => {
     try {
-        const user = await users.find().sort({"Score" : -1});
+        const user = await users.find().sort({ "Score": -1 });
         res.status(201).json(user)
     } catch (error) {
         res.status(404).json(error)
@@ -62,10 +62,12 @@ router.get("/getUser/:id", async (req, res) => {
 router.patch("/Update/:id", async (req, res) => {
     try {
         console.log(req.body)
-       const { id } = req.params
-        const userindividual = await users.findOneAndUpdate({ email: id }, {$set:{Score: req.body.Score}})
-       await console.log(userindividual)
-       await res.status(201).json(userindividual)
+        const { id } = req.params
+        const userindividual = await users.findOneAndUpdate({ _id: id }, { $set: { Score: req.body.Score } })
+        if (userindividual==null) {
+            console.log(userindividual)
+        }
+        res.status(201).json(userindividual)
     } catch (error) {
         res.status(404).json(error)
     }
